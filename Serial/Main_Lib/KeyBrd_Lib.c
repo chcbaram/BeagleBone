@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------------------------
-//            TITLE       : Key √≥∏Æ «‘ºˆ ∏¿Ω 
+//            TITLE       : Key Ï≤òÎ¶¨ Ìï®Ïàò Î™®Ïùå 
 //            WORK        :
 //            DATE        : 2003. 2. 27
 //            FILE        : Key_Lib.c
@@ -9,42 +9,37 @@
 
 
 
+ 
+struct termios orig_termios;
+
+
+
+
+void KeyBrd_Close( void );
+
 
 
 
 //----------------------------------------------------------------------------------------------
 //            TITLE   : init_keyboard
 //
-//            WORK    : ≈∞√≥∏Æ √ ±‚»≠
+//            WORK    : ÌÇ§Ï≤òÎ¶¨ Ï¥àÍ∏∞Ìôî
 //            
 //            DATE    : 2003. 2. 27
 //----------------------------------------------------------------------------------------------
 void KeyBrd_Init(void)
 {
-	//
-	//------------ ≈ÕπÃ≥Œ¿« º”º∫¿ª ¿–æÓø¬¥Ÿ
-	//
-        tcgetattr(0,&initial_settings);
-	
-	//
-	//------------ ≈ÕπÃ≥Œ¿∫ Canonical Mode, Non Canonical Mode µŒ∞°¡ˆ ¿÷¥Ÿ
-	//             ø©±‚º≠¥¬ Non Canonical Mode ∏¶ ªÁøÎ
-        new_settings             =  initial_settings;
+    struct termios new_termios;
 
-	//
-	//------------ c_lflag <- Local Mode ¿Ã¥Ÿ
-	//
-        new_settings.c_lflag    &= ~ICANON;        // NON Canonical Mode ∑Œ πŸ≤€¥Ÿ
-        new_settings.c_lflag    &= ~ECHO;          // ECHO ∏¶ ≤ˆ¥Ÿ
-        new_settings.c_lflag    &= ~ISIG;          // ∆Ø¡§ƒ≥∏Ø≈Õø° ¥Î«ÿ ∞ÀªÁ«œ¥¿∞Õ¿ª «œ¡ˆæ ¿Ω
+    /* take two copies - one for now, one for later */
+    tcgetattr(0, &orig_termios);
+    memcpy(&new_termios, &orig_termios, sizeof(new_termios));
 
-	//
-	//------------ read Ω««‡Ω√ ¿–æÓø√ πÆ¿⁄ ∞πºˆ... º≥¡§
-	//
-        new_settings.c_cc[VMIN]  =  1;             // ≈ÕπÃ≥Œø°º≠ πﬁ¿ª πÆ¿⁄ ªÁ¿Ã¡Ó 1byte
-        new_settings.c_cc[VTIME] =  0;             // Time out = 0 ∂Û¥¬∞Õ¿∫ Time Out ≈∏¿Ã∏”∞° µø¿€ æ»«‘
-	
-        tcsetattr(0, TCSANOW, &new_settings);      // ªı∑ŒøÓ ∞™¿∏∑Œ º¬∆√
+    /* register cleanup handler, and set the new terminal mode */
+    atexit(KeyBrd_Close);
+    cfmakeraw(&new_termios);
+    tcsetattr(0, TCSANOW, &new_termios);
+    
 }
 
 
@@ -54,18 +49,14 @@ void KeyBrd_Init(void)
 //----------------------------------------------------------------------------------------------
 //            TITLE   : KeyBrd_Close
 //
-//            WORK    : ≈ÕπÃ≥Œ ∫π±∏
+//            WORK    : ÌÑ∞ÎØ∏ÎÑê Î≥µÍµ¨
 //            
 //            DATE    : 2003. 2. 27
 //----------------------------------------------------------------------------------------------
 void KeyBrd_Close( void )
 {
-	//
-	//------------ ≥ πÃ≥Œ¿ª ø¯∑° ªÛ≈¬∑Œ ∫πø¯«—¥Ÿ
-	//
-        tcsetattr(0,TCSANOW, &initial_settings);
+    tcsetattr(0, TCSANOW, &orig_termios);
 }
-
 
 
 
@@ -74,63 +65,19 @@ void KeyBrd_Close( void )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : KeyBrd_Hit
 //
-//            WORK    : ≈∞∞° ¥≠∑»¥¬¡ˆ ∞ÀªÁ
+//            WORK    : ÌÇ§Í∞Ä ÎàåÎ†∏ÎäîÏßÄ Í≤ÄÏÇ¨
 //            
 //            DATE    : 2003. 2. 27
 //----------------------------------------------------------------------------------------------
 int KeyBrd_Hit(void)
 {
-        char ch;
-        int nread;
-
-        if(peek_character != -1)
-                return 1;
-
-	new_settings.c_cc[VMIN] = 0;           // VMIN = 0 ¿Ã∏È ±‚¥Ÿ∏Æ¡ˆ æ ∞Ì πŸ∑Œ 1πŸ¿Ã∆Æ ∞°¡Æø¬¥Ÿ
-        tcsetattr(0, TCSANOW, &new_settings);
-        nread = read(0,&ch,1);                 // ¿Ã∞Õ¿Ã «ŸΩ….. ±‚¥Ÿ∏Æ¡ˆ æ ∞Ì πŸ∑Œ ∞°¡Æø»
-	                                       // µ•¿Ã≈Õ∞° ¿÷≥ƒ æ¯≥ƒø° µ˚∂Û return ∞™ ¥Ÿ∏ß		
-        new_settings.c_cc[VMIN] = 1;           // ¥ŸΩ√ ø¯∑°¥Î∑Œ...
-        tcsetattr(0,TCSANOW, &new_settings);
-
-	if(nread == 1)
-        {
-		peek_character = ch;
-		return 1;
-	}
-	
-	return 0;
+    struct timeval tv = { 0L, 0L };
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(0, &fds);
+    return select(1, &fds, NULL, NULL, &tv);
 }
 
-
-
-
-//----------------------------------------------------------------------------------------------
-//            TITLE   : readch
-//
-//            WORK    : getch øÕ ∂»∞∞¿∫ ±∏Ω«¿ª «—¥Ÿ
-//            
-//            DATE    : 2003. 2. 27
-//----------------------------------------------------------------------------------------------
-int KeyBrd_Getch_Buf( void )
-{
-        char ch;
-
-	if(peek_character != -1)
-        {
-		ch = peek_character;
-		peek_character = -1;
-		return ch;
-	}
-	
-	read(0,&ch,1);
-
-#ifdef  DOS_MODE
-	// ø£≈Õ≈∞∏¶ 0x0d ∑Œ ∫Ø»Ø«—¥Ÿ
-	if( ch == 10 ) 	ch = 13;
-#endif
-	return ch;
-}
 
 
 
@@ -138,42 +85,25 @@ int KeyBrd_Getch_Buf( void )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : KeyBrd_Getch
 //
-//            WORK    : ≈∞∞™¿ª µπ∑¡¡ÿ¥Ÿ
+//            WORK    : ÌÇ§Í∞íÏùÑ ÎèåÎ†§Ï§ÄÎã§
 //            
 //            DATE    : 2003. 2. 27
 //----------------------------------------------------------------------------------------------
 char KeyBrd_Getch(void)
 {
-	char ch;
-
-	while( !KeyBrd_Hit() );
-
-	ch = KeyBrd_Getch_Buf();
-
-#ifdef  DOS_MODE
-	// ø£≈Õ≈∞∏¶ 0x0d ∑Œ ∫Ø»Ø«—¥Ÿ
-	if( ch == 10 ) 	ch = 13;
-#endif
-	return ch;
-				
+    int r;
+    unsigned char c;
+    
+    if ((r = read(0, &c, sizeof(c))) < 0) 
+    {
+        return r;
+    } else {
+        return c;
+    }		
 }
 
 
-
-
-
-                                                                                                 
-//----------------------------------------------------------------------------------------------
-//            TITLE   : KeyBrd_Putch
-//
-//            WORK    : ≈∞∞™¿ª µπ∑¡¡ÿ¥Ÿ
-//
-//            DATE    : 2003. 2. 27
-//----------------------------------------------------------------------------------------------
-void KeyBrd_Putch( char KeyData )
-{
-	write(0, &KeyData, 1 );                                                                                    
-}
+                                                                                        
                                                                                                  
                                                                                                  
 

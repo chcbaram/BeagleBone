@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------------------------
-//            TITLE       : Àû¿Ü¼± Åë½Å ½ÇÇèÀ» À§ÇÑ ÇÁ·Î±×·¥
+//            TITLE       : ì ì™¸ì„  í†µì‹  ì‹¤í—˜ì„ ìœ„í•œ í”„ë¡œê·¸ë¨
 //            WORK        :
 //            DATE        : 2004. 2. 12
 //            FILE        : Sen_Lib.h
@@ -51,14 +51,16 @@ int main( void )
 	char Key_Data;
 	char Uart_Data;	
 
-	//-----  ÃÊ±âÈ­
+	//-----  ì´ˆê¸°í™”
 	//
 	Main_Init();
 
 	printf("Irda Test Pgm..\n");	
 	printf("Irda Speed : 2400 BPS\n");	
 	printf("Q key : Exit Pgm..\n");	
-	
+
+
+
 
 	while(1)
 	{
@@ -67,14 +69,14 @@ int main( void )
                 
         
 		/*			
-		// µ¥ÀÌÅÍ°¡ ¿ÔÀ»°æ¿ì¿¡
+		// ë°ì´í„°ê°€ ì™”ì„ê²½ìš°ì—
 		if( UART_Q_VAILD( UART_Q_0 ) )
 		{
                                                                                                  
 			Uart_Q_Pop( UART_Q_0, &Uart_Data );
 			
 			Uart_Print("ACK : ");
-			Uart_Putch( Uart_Data );  // ½Ã¸®¾ó·Î ¹®ÀÚ Ãâ·Â
+			Uart_Putch( Uart_Data );  // ì‹œë¦¬ì–¼ë¡œ ë¬¸ì ì¶œë ¥
 			Uart_Print("\n");
 			
 			
@@ -83,21 +85,29 @@ int main( void )
 		*/
 		
 		
-		Uart_Data = Uart_Getch();
-		Uart_Print("ACK : ");
-		Uart_Putch( Uart_Data );  // ½Ã¸®¾ó·Î ¹®ÀÚ Ãâ·Â
-		Uart_Print("\n");		
+		//Uart_Data = Uart_Getch();
+		//Uart_Print("ACK : ");
+		//Uart_Putch( Uart_Data );  // ì‹œë¦¬ì–¼ë¡œ ë¬¸ì ì¶œë ¥
+		//Uart_Print("\n");		
 			
-		// Å°º¸µå Ã³¸®
+		// í‚¤ë³´ë“œ ì²˜ë¦¬
 		//if( Key_Proc() ) break;
+		
+		if( KeyBrd_Hit() )
+		{
+			Key_Data = KeyBrd_Getch();
+			printf("Key Pressed %c\r\n", Key_Data);
+			
+			if( Key_Data == 'q' ) break;
+		}
 
 	}
 
 
-	//----- Á¾·á Ã³¸®
+	//----- ì¢…ë£Œ ì²˜ë¦¬
 	//	
-	Uart_ClosePort();
-	//KeyBrd_Close();
+	//Uart_ClosePort();
+	KeyBrd_Close();
 
 	return 0;
 }
@@ -114,11 +124,11 @@ int main( void )
 //----------------------------------------------------------------------------------------------
 void Main_Init( void )
 {
-        int  Uart_Handle_Ptr;
+	int  Uart_Handle_Ptr;
                                                                                                  
-        //KeyBrd_Init();
-        Uart_Handle_Ptr = Uart_Open( COME_EX1, BAUD_115200 );
-        //Uart_Sig_Init( Uart_Handle_Ptr );
+	KeyBrd_Init();
+	//Uart_Handle_Ptr = Uart_Open( COME_EX1, BAUD_115200 );
+	//Uart_Sig_Init( Uart_Handle_Ptr );
 	//Uart_Sig_Func_Init( Uart_Handle_Ptr, Sen_Receive_Handle );
 	//Uart_Sig_Func_Init( Uart_Handle_Ptr, Uart_Rxd_Func );
 }
@@ -129,9 +139,9 @@ void Main_Init( void )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Key_Proc
 //
-//            WORK    : Å°°¡ ´­·È´ÂÁö °Ë»çÇØ¼­ Ã³¸®ÇÑ´Ù
-//                      q ¸¦ ´©¸£¸é ÇÁ·Î±×·¥ Á¾·áÇÏ°í
-//                      ±×·¸Áö ¾ÊÀ¸¸é ½Ã¸®¾ó·Î ¹®ÀÚ µ¥ÀÌÅÍ Àü¼ÛÇÑ´Ù
+//            WORK    : í‚¤ê°€ ëˆŒë ¸ëŠ”ì§€ ê²€ì‚¬í•´ì„œ ì²˜ë¦¬í•œë‹¤
+//                      q ë¥¼ ëˆ„ë¥´ë©´ í”„ë¡œê·¸ë¨ ì¢…ë£Œí•˜ê³ 
+//                      ê·¸ë ‡ì§€ ì•Šìœ¼ë©´ ì‹œë¦¬ì–¼ë¡œ ë¬¸ì ë°ì´í„° ì „ì†¡í•œë‹¤
 //
 //            DATE    : 2003. 6. 4
 //----------------------------------------------------------------------------------------------
@@ -146,12 +156,12 @@ int Key_Proc( void )
                                                                                                  
 		if( Key_Data == 'q' ) return 1;
                                                                                                  
-		// DOS ¸ğµå¿Í È£È¯À» À§ÇØ¼­
-		// µµ½º¿¡¼­´Â ¿£ÅÍÅ°°¡ 0x0d Áï 13ÀÌ´Ù
+		// DOS ëª¨ë“œì™€ í˜¸í™˜ì„ ìœ„í•´ì„œ
+		// ë„ìŠ¤ì—ì„œëŠ” ì—”í„°í‚¤ê°€ 0x0d ì¦‰ 13ì´ë‹¤
 		if( Key_Data == 10 ) Key_Data = 13;
                                                                                                  
 		//KeyBrd_Putch( Key_Data );
-		Uart_Putch( Key_Data );		
+		//Uart_Putch( Key_Data );		
                                                                                                  
 	}
 
