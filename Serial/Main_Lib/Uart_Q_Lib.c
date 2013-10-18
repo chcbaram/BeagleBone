@@ -1,12 +1,12 @@
 //----------------------------------------------------------------------------
-//    ÇÁ·Î±×·¥¸í : Uart ¹öÆÛ °ü·Ã 
+//    í”„ë¡œê·¸ëž¨ëª… : Uart ë²„í¼ ê´€ë ¨ 
 //
-//    ¸¸µçÀÌ     : Hanchol Cho
+//    ë§Œë“ ì´     : Hanchol Cho
 //
-//    ³¯  Â¥     : 2003.7.4
+//    ë‚   ì§œ     : 2003.7.4
 //
 //    MPU        : 
-//    ÆÄÀÏ¸í     : Uart_Q_Lib.c
+//    íŒŒì¼ëª…     : Uart_Q_Lib.c
 //----------------------------------------------------------------------------
 
 
@@ -16,8 +16,8 @@
 
 #define UART_BUFFER_OBJ_MAX 2
 
-#define UART_BUFFER_MAX     50                //  ¹öÆÛ ÃÖ´ë °¹¼ö
-#define UART_DATA_PTR_TYPE  S8                //  µ¥ÀÌÅÍ Æ÷¸ä Çü½Ä 
+#define UART_BUFFER_MAX     50                //  ë²„í¼ ìµœëŒ€ ê°¯ìˆ˜
+#define UART_DATA_PTR_TYPE  S8                //  ë°ì´í„° í¬ë©§ í˜•ì‹ 
 
 
 
@@ -25,16 +25,16 @@
 #define UART_Q_FULL         0
 #define UART_POP_SUCCESS    2
 
-#define UART_Q_SIZE(x)       Uart_Q_Size[x]       // ¹öÆÛÀÇ »çÀÌÁî¸¦ µ¹·ÁÁØ´Ù.
-#define UART_Q_VAILD(x)      Uart_Q_Size[x]       // Äµ¿¡ µ¥ÀÌÅÍ°¡ ÀÖ´ÂÁö °Ë»ç      
+#define UART_Q_SIZE(x)       Uart_Q_Size[x]       // ë²„í¼ì˜ ì‚¬ì´ì¦ˆë¥¼ ëŒë ¤ì¤€ë‹¤.
+#define UART_Q_VAILD(x)      Uart_Q_Size[x]       // ìº”ì— ë°ì´í„°ê°€ ìžˆëŠ”ì§€ ê²€ì‚¬      
 
              
-UART_DATA_PTR_TYPE    Uart_Q_Buffer[ UART_BUFFER_OBJ_MAX ][ UART_BUFFER_MAX+1 ];  // µé¾î¿À´Â µ¥ÀÌÅÍ ¹öÆÛ
+UART_DATA_PTR_TYPE    Uart_Q_Buffer[ UART_BUFFER_OBJ_MAX ][ UART_BUFFER_MAX+1 ];  // ë“¤ì–´ì˜¤ëŠ” ë°ì´í„° ë²„í¼
 
 
-S16  Uart_Q_Size[ UART_BUFFER_OBJ_MAX ];                       // ¹öÆÛÀÇ µ¥ÀÌÅÍ ¼ýÀÚ  
-U16  Uart_Q_Start[ UART_BUFFER_OBJ_MAX ];                      // ¹öÆÛÀÇ ½ÃÀÛ Æ÷ÀÎÅÍ
-U16  Uart_Q_End[ UART_BUFFER_OBJ_MAX ];                        // ¹öÆÛÀÇ ³¡ Æ÷ÀÎÅÍ
+S16  Uart_Q_Size[ UART_BUFFER_OBJ_MAX ];                       // ë²„í¼ì˜ ë°ì´í„° ìˆ«ìž  
+U16  Uart_Q_Start[ UART_BUFFER_OBJ_MAX ];                      // ë²„í¼ì˜ ì‹œìž‘ í¬ì¸í„°
+U16  Uart_Q_End[ UART_BUFFER_OBJ_MAX ];                        // ë²„í¼ì˜ ë í¬ì¸í„°
 
 
 
@@ -44,7 +44,7 @@ U16  Uart_Q_End[ UART_BUFFER_OBJ_MAX ];                        // ¹öÆÛÀÇ ³¡ Æ÷ÀÎ
 //
 //          TITLE : Uart_Q_Init
 //
-//          WORK  : ÄµÀÇ Q ¹öÆÛ¸¦ ÃÊ±âÈ­ ÇÑ´Ù
+//          WORK  : ìº”ì˜ Q ë²„í¼ë¥¼ ì´ˆê¸°í™” í•œë‹¤
 //
 //----------------------------------------------------------------------------
 void Uart_Q_Init(void)
@@ -54,8 +54,8 @@ void Uart_Q_Init(void)
 	for( i=0; i < UART_BUFFER_OBJ_MAX; i++)
 	{
         	Uart_Q_Size[i]  = 0;
-        	Uart_Q_Start[i] = 0;    // Å¥ÀÇ ½ÃÀÛÁ¡ ÃÊ±âÈ­
-        	Uart_Q_End[i]   = 0;    // Å¥ÀÇ ³¡Á¡ ÃÊ±âÈ­
+        	Uart_Q_Start[i] = 0;    // íì˜ ì‹œìž‘ì  ì´ˆê¸°í™”
+        	Uart_Q_End[i]   = 0;    // íì˜ ëì  ì´ˆê¸°í™”
       	}
 }        
 
@@ -67,53 +67,53 @@ void Uart_Q_Init(void)
 //
 //          TITLE : Uart_Q_Add
 //
-//          WORK  : ÄµÀÇ Q ¹öÆÛ¿¡ µ¥ÀÌÅÍ »ðÀÔ
+//          WORK  : ìº”ì˜ Q ë²„í¼ì— ë°ì´í„° ì‚½ìž…
 //
-//                  0 : ¿¡·¯ 
+//                  0 : ì—ëŸ¬ 
 //----------------------------------------------------------------------------
 S8 Uart_Q_Push(U8 Buf_Index, UART_DATA_PTR_TYPE  *PushData )
 {
         
-        // µ¥ÀÌÅÍÀÇ ³¡ Æ÷ÀÎÅÍ´Â Ç×»ó ºñ¾îÀÖ´Â °ø°£À» °¡¸£Å°°í ÀÖ´Ù.
+        // ë°ì´í„°ì˜ ë í¬ì¸í„°ëŠ” í•­ìƒ ë¹„ì–´ìžˆëŠ” ê³µê°„ì„ ê°€ë¥´í‚¤ê³  ìžˆë‹¤.
         //  |      |
-        //  |      | <- End Æ÷ÀÎÆ®
+        //  |      | <- End í¬ì¸íŠ¸
         //  | Start |
-        // µ¥ÀÌÅÍ¸¦ End Æ÷ÀÎÅÍ¿¡ ¸ÕÀú¾²°í Æ÷ÀÎÅÍ¸¦ Áõ°¡½ÃÅ²´Ù.
+        // ë°ì´í„°ë¥¼ End í¬ì¸í„°ì— ë¨¼ì €ì“°ê³  í¬ì¸í„°ë¥¼ ì¦ê°€ì‹œí‚¨ë‹¤.
 
 
-	// ¸¸¾àÀ» À§ÇØ »çÀÌÁî¸¦ ÃÊ±âÈ­
+	// ë§Œì•½ì„ ìœ„í•´ ì‚¬ì´ì¦ˆë¥¼ ì´ˆê¸°í™”
 	//
         if( Uart_Q_End[Buf_Index] == Uart_Q_Start[Buf_Index]) Uart_Q_Size[Buf_Index] = 0;
                 
                 
-	// Å¥ ¹öÆÛ¿¡ µ¥ÀÌÅÍ »ðÀÔ
+	// í ë²„í¼ì— ë°ì´í„° ì‚½ìž…
 	//                
         Uart_Q_Buffer[Buf_Index][ Uart_Q_End[Buf_Index] ] = *PushData;
         
         
         
-        if( ++Uart_Q_End[Buf_Index] >= UART_BUFFER_MAX )    // Å° ¹öÆÛÀÇ ³¡ÀÚ¸®¿¡ ¿À¸é
-        {                                      // Æ÷ÀÎÅÍ¸¦ Ã³À½À¸·Î µ¹¸°´Ù
-                if( Uart_Q_Start[Buf_Index] )        // ½ÃÀÛÆ÷ÀÎÅÍ°¡ Ã³À½¿¡ ÀÖÁö ¾ÊÀ¸¸é
+        if( ++Uart_Q_End[Buf_Index] >= UART_BUFFER_MAX )    // í‚¤ ë²„í¼ì˜ ëìžë¦¬ì— ì˜¤ë©´
+        {                                      // í¬ì¸í„°ë¥¼ ì²˜ìŒìœ¼ë¡œ ëŒë¦°ë‹¤
+                if( Uart_Q_Start[Buf_Index] )        // ì‹œìž‘í¬ì¸í„°ê°€ ì²˜ìŒì— ìžˆì§€ ì•Šìœ¼ë©´
                 {
-                        Uart_Q_End[Buf_Index] = 0;   // ³¡Æ÷ÀÎÅÍ¸¦ Ã³À½À¸·Î ¿Å±ä´Ù.
+                        Uart_Q_End[Buf_Index] = 0;   // ëí¬ì¸í„°ë¥¼ ì²˜ìŒìœ¼ë¡œ ì˜®ê¸´ë‹¤.
                 }                        
-                else                     // ½ÃÀÛÆ÷ÀÎÅÍ°¡ Ã³À½¿¡ ÀÖÀ¸¸é
-                {                        // ½ÃÀÛÆ÷ÀÎÅÍ¸¦ ´ÙÀ½À¸·Î ¿Å°Ü¾ß ÇÑ´Ù.
+                else                     // ì‹œìž‘í¬ì¸í„°ê°€ ì²˜ìŒì— ìžˆìœ¼ë©´
+                {                        // ì‹œìž‘í¬ì¸í„°ë¥¼ ë‹¤ìŒìœ¼ë¡œ ì˜®ê²¨ì•¼ í•œë‹¤.
                         Uart_Q_Start[Buf_Index]++;  
                         Uart_Q_End[Buf_Index]  = 0;
                 }                                                
         }       
-        else if( Uart_Q_End[Buf_Index] == Uart_Q_Start[Buf_Index] )      // ³¡Æ÷ÀÎÅÍ¶û ½ÃÀÛÆ÷ÀÎÅÍ¶û °°À¸¸é
-        {                                        // ½ÃÀÛÆ÷ÀÎÅÍ¸¦ ´ÙÀ½À¸·Î È¨°Ü¾ßÇÑ´Ù.
+        else if( Uart_Q_End[Buf_Index] == Uart_Q_Start[Buf_Index] )      // ëí¬ì¸í„°ëž‘ ì‹œìž‘í¬ì¸í„°ëž‘ ê°™ìœ¼ë©´
+        {                                        // ì‹œìž‘í¬ì¸í„°ë¥¼ ë‹¤ìŒìœ¼ë¡œ í™ˆê²¨ì•¼í•œë‹¤.
                 if( ++Uart_Q_Start[Buf_Index] >= UART_BUFFER_MAX )
                 {
-                        Uart_Q_Start[Buf_Index] = 0;          // ¿Å±æ·Á°íÇÏ´Â ½ÃÀÛÆ÷ÀÎÅÍ°¡
-                                                                // ³¡¿¡ÀÖÀ¸¸é Ã³À½À¸·Î ¿Å±ä´Ù.
+                        Uart_Q_Start[Buf_Index] = 0;          // ì˜®ê¸¸ë ¤ê³ í•˜ëŠ” ì‹œìž‘í¬ì¸í„°ê°€
+                                                                // ëì—ìžˆìœ¼ë©´ ì²˜ìŒìœ¼ë¡œ ì˜®ê¸´ë‹¤.
                 }                        
         }
         
-        // ºä »çÀÌÁî °ªÀÌ ³ÑÄ¡Áö ¾Êµµ·Ï ÇÏÀÚ
+        // ë·° ì‚¬ì´ì¦ˆ ê°’ì´ ë„˜ì¹˜ì§€ ì•Šë„ë¡ í•˜ìž
         //
         if( ++Uart_Q_Size[Buf_Index] > UART_BUFFER_MAX)
         { 
@@ -131,7 +131,7 @@ S8 Uart_Q_Push(U8 Buf_Index, UART_DATA_PTR_TYPE  *PushData )
 //
 //          TITLE : Uart_Q_Pop
 //
-//          WORK  : ÄµÀÇ Q ¹öÆÛ¿¡ µ¥ÀÌÅÍ °¡Á®¿Â´Ù.
+//          WORK  : ìº”ì˜ Q ë²„í¼ì— ë°ì´í„° ê°€ì ¸ì˜¨ë‹¤.
 //
 //                  
 //----------------------------------------------------------------------------
@@ -140,35 +140,35 @@ S8 Uart_Q_Pop(U8 Buf_Index, UART_DATA_PTR_TYPE *Motion_Data_Ptr )
 {
         U16 Pop_Index;
 
-	Pop_Index = Uart_Q_Start[Buf_Index];    // ²¨³»¿Ã µ¥ÀÌÅÍ ÀÎµ¦½º ÀúÀå
+	Pop_Index = Uart_Q_Start[Buf_Index];    // êº¼ë‚´ì˜¬ ë°ì´í„° ì¸ë±ìŠ¤ ì €ìž¥
 	
         if( Uart_Q_End[Buf_Index] == Uart_Q_Start[Buf_Index])
         {
         	Uart_Q_Size[Buf_Index] = 0;
-        	return UART_Q_EMPTY; // ¹öÆÛ°¡ ºñ¾îÀÖÀ¸¸é
+        	return UART_Q_EMPTY; // ë²„í¼ê°€ ë¹„ì–´ìžˆìœ¼ë©´
 	}	
 	
-	// Å¥ÀÇ ³¡¿¡ °É·È´Ù¸é ´Ù½Ã Ã·À¸·Î µ¹¸°´Ù.
+	// íì˜ ëì— ê±¸ë ¸ë‹¤ë©´ ë‹¤ì‹œ ì²¨ìœ¼ë¡œ ëŒë¦°ë‹¤.
 	//                                
         if( ++Uart_Q_Start[Buf_Index] >= UART_BUFFER_MAX)
                 Uart_Q_Start[Buf_Index] = 0;
 
 	
-	// »çÀÌÁî´Â ÇÑ°³ÀÇ µ¥ÀÌÅÍ¸¦ ²¨³ÂÀ¸¹Ç·Î ÁÙÀÎ´Ù
+	// ì‚¬ì´ì¦ˆëŠ” í•œê°œì˜ ë°ì´í„°ë¥¼ êº¼ëƒˆìœ¼ë¯€ë¡œ ì¤„ì¸ë‹¤
 	//
         Uart_Q_Size[Buf_Index]--;
         
-        // ¾ð´õ ÇÃ·Î¿ö ¹æÁö
+        // ì–¸ë” í”Œë¡œì›Œ ë°©ì§€
         //
         if( Uart_Q_Size[Buf_Index] < 0 ) Uart_Q_Size[Buf_Index] = 0;
         
-        // Å¥ ¹öÆÛÀÇ ³»¿ëÀ» ÀúÀåÄÚÁ®ÇÏ´Â ¿øÇÏ´Â Àü´ÞÀÎ¼ö¿¡ Ä«ÇÇÇÑ´Ù
+        // í ë²„í¼ì˜ ë‚´ìš©ì„ ì €ìž¥ì½”ì ¸í•˜ëŠ” ì›í•˜ëŠ” ì „ë‹¬ì¸ìˆ˜ì— ì¹´í”¼í•œë‹¤
         //
         *Motion_Data_Ptr =  Uart_Q_Buffer[Buf_Index][ Pop_Index ];
         
         
         
-        return UART_POP_SUCCESS;     // ·Îµå ¼º°ø
+        return UART_POP_SUCCESS;     // ë¡œë“œ ì„±ê³µ
 }
 
 

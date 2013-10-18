@@ -33,15 +33,7 @@ void Main_Init( void );
 
 void Uart_Rxd_Func( char Data )
 {
-	static First_Check = 0;
-	
-	
-	if( First_Check )
-	{
-		printf("%x\n", Data );
-	}
-	
-	First_Check = 1;
+	printf("%c", Data );
 }
 
 
@@ -99,6 +91,8 @@ int main( void )
 			printf("Key Pressed %c\r\n", Key_Data);
 			
 			if( Key_Data == 'q' ) break;
+			
+			Uart_Putch( Key_Data );
 		}
 
 	}
@@ -106,7 +100,7 @@ int main( void )
 
 	//----- 종료 처리
 	//	
-	//Uart_ClosePort();
+	Uart_Close();
 	KeyBrd_Close();
 
 	return 0;
@@ -127,10 +121,10 @@ void Main_Init( void )
 	int  Uart_Handle_Ptr;
                                                                                                  
 	KeyBrd_Init();
-	//Uart_Handle_Ptr = Uart_Open( COME_EX1, BAUD_115200 );
-	//Uart_Sig_Init( Uart_Handle_Ptr );
+	Uart_Handle_Ptr = Uart_Open( COM_USB0, BAUD_115200 );
+	Uart_Sig_Init( Uart_Handle_Ptr );
 	//Uart_Sig_Func_Init( Uart_Handle_Ptr, Sen_Receive_Handle );
-	//Uart_Sig_Func_Init( Uart_Handle_Ptr, Uart_Rxd_Func );
+	Uart_Sig_Func_Init( Uart_Handle_Ptr, Uart_Rxd_Func );
 }
 
 

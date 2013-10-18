@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------------------------
-//            TITLE       : Uart ���� ���� �Լ� ���
+//            TITLE       : Uart 버퍼 관련 함수 헤더
 //            WORK        :
 //            DATE        : 2003. 7. 4
 //            FILE        : Uart_Q_Lib.h
@@ -15,7 +15,7 @@
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Sig_Init
 //
-//            WORK    : �ø��� �ñ׳� �ʱ�ȭ
+//            WORK    : 시리얼 시그널 초기화
 //
 //            DATE    : 2003. 7. 4
 //----------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ void Uart_Sig_Init( int Handle_Ptr )
 {
 	U8 i;
 
-	//----- �ø�����Ʈ �ñ׳� �ڵ鷯 ���� 
+	//----- 시리얼포트 시그널 핸들러 설정 
 	//
 	Sig_Action.sa_handler  = Uart_Q_Sig_Handler;
 	//Sig_Action.sa_mask     = 0;
@@ -31,9 +31,9 @@ void Uart_Sig_Init( int Handle_Ptr )
 	Sig_Action.sa_restorer = NULL; 
 	sigaction( SIGIO, &Sig_Action, NULL );
 
-	// SIGIO �ñ׳��� ������ �ֵ��� �Ѵ�
+	// SIGIO 시그널을 받을수 있도록 한다
 	fcntl( Handle_Ptr, F_SETOWN, getpid() );  
-	fcntl( Handle_Ptr, F_SETFL, FASYNC );  // ���� ��ũ���͸� �񵿱����
+	fcntl( Handle_Ptr, F_SETFL, FASYNC );  // 파일 디스크립터를 비동기모드로
 
 }	
 
@@ -43,7 +43,7 @@ void Uart_Sig_Init( int Handle_Ptr )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Sig_Func_Init
 //
-//            WORK    : �ø��� �ñ׳� �ʱ�ȭ
+//            WORK    : 시리얼 시그널 초기화
 //
 //            DATE    : 2004. 2. 7
 //----------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ void Uart_Sig_Func_Init( int Handle_Ptr, void (*Func_Ptr)(char Data) )
 {
 	U8 i;
 
-	//----- �ø�����Ʈ �ñ׳� �ڵ鷯 ���� 
+	//----- 시리얼포트 시그널 핸들러 설정 
 	//
 	Sig_Action.sa_handler  = Uart_Q_Sig_Func_Handler;
 	//Sig_Action.sa_mask     = 0;
@@ -59,9 +59,9 @@ void Uart_Sig_Func_Init( int Handle_Ptr, void (*Func_Ptr)(char Data) )
 	Sig_Action.sa_restorer = NULL; 
 	sigaction( SIGIO, &Sig_Action, NULL );
 
-	// SIGIO �ñ׳��� ������ �ֵ��� �Ѵ�
+	// SIGIO 시그널을 받을수 있도록 한다
 	fcntl( Handle_Ptr, F_SETOWN, getpid() );  
-	fcntl( Handle_Ptr, F_SETFL, FASYNC );  // ���� ��ũ���͸� �񵿱����
+	fcntl( Handle_Ptr, F_SETFL, FASYNC );  // 파일 디스크립터를 비동기모드로
 
 	Sig_Func_Ptr = Func_Ptr;
 }	
@@ -74,7 +74,7 @@ void Uart_Sig_Func_Init( int Handle_Ptr, void (*Func_Ptr)(char Data) )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Q_Sig_Handler
 //
-//            WORK    : �ø��� ��Ʈ �ڵ鷯 �Լ� 
+//            WORK    : 시리얼 포트 핸들러 함수 
 //
 //            DATE    : 2003. 7. 4
 //----------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ void Uart_Q_Sig_Handler( int Status )
 	
 	Receive_Size = read( Uart_Handle, Uart_Buf, 255 );
 
-	if( Receive_Size > 0 )   // �����͸� �޾Ҵٸ�?
+	if( Receive_Size > 0 )   // 데이터를 받았다면?
 	{
 		for( i=0; i<Receive_Size; i++)
 		{
@@ -102,7 +102,7 @@ void Uart_Q_Sig_Handler( int Status )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Q_Sig_Func_Handler
 //
-//            WORK    : �ø��� ��Ʈ �ڵ鷯 �Լ� ����� ���� �Լ� ����
+//            WORK    : 시리얼 포트 핸들러 함수 사용자 정의 함수 실행
 //
 //            DATE    : 2004. 2. 7
 //----------------------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ void Uart_Q_Sig_Func_Handler( int Status )
 	
 	Receive_Size = read( Uart_Handle, Uart_Buf, 255 );
 
-	if( Receive_Size > 0 )   // �����͸� �޾Ҵٸ�?
+	if( Receive_Size > 0 )   // 데이터를 받았다면?
 	{
 		for( i=0; i<Receive_Size; i++)
 		{

@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------------------------
-//            TITLE       : Serial Åë½Å Ã³¸® ÇÔ¼ö ¸ğÀ½ 
+//            TITLE       : Serial í†µì‹  ì²˜ë¦¬ í•¨ìˆ˜ ëª¨ìŒ 
 //            WORK        :
 //            DATE        : 2003. 3. 7
 //            FILE        : Uart_Lib.c
@@ -11,12 +11,12 @@
 
 
 
-// MACRO Uart_Open(PortNum,BaudData) ·Î Á¤ÀÇ µÇ¾îÀÖ´Ù.
+// MACRO Uart_Open(PortNum,BaudData) ë¡œ ì •ì˜ ë˜ì–´ìˆë‹¤.
 
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Ser_OpenPortCanonical_Mode
 //
-//            WORK    : ½Ã¸®¾ó Æ÷Æ® ÃÊ±âÈ­
+//            WORK    : ì‹œë¦¬ì–¼ í¬íŠ¸ ì´ˆê¸°í™”
 //            
 //            DATE    : 2003. 3. 7
 //----------------------------------------------------------------------------------------------
@@ -31,23 +31,23 @@ void Uart_OpenPortCanonical_Mode( int Uart_PortNum, int Uart_BaudData  )
 	}
 
 
-	// ÀúÀåÇÑ´Ù ÇöÁ¦ ½Ã¸®¾óÆ÷Æ® Á¤º¸¸¦
+	// ì €ì¥í•œë‹¤ í˜„ì œ ì‹œë¦¬ì–¼í¬íŠ¸ ì •ë³´ë¥¼
 	tcgetattr( Uart_Handle, &Term_OldIo );
 	// Write zeros to a byte string
 	bzero( &Term_NewIo, sizeof( Term_NewIo ) );
 
 	// CS8   : 8N1 (8bit, No Parity, 1 Stopbit
-	// CREAD : ¼ö½Å °¡´É
+	// CREAD : ìˆ˜ì‹  ê°€ëŠ¥
 	Term_NewIo.c_cflag = Uart_Baud[ Uart_BaudData ] | CS8 | CLOCAL | CREAD;	
 	
-	// IGNPAR : Parity ¿¡·¯°¡ ÀÖ´Â ¹®ÀÚ ¹ÙÀÌÆ®¸¦ ¹«½ÃÇÑ´Ù
-	// ICRNL  : CR ¹®ÀÚ¸¦ NL ¹®ÀÚ·Î º¯È¯ Ã³¸®ÇÑ´Ù. ( ÀÌ¼³Á¤À» ¾ÈÇÏ¸é ´Ù¸¥ ÄÄÇ»ÅÍ´Â 
-	//          CR ¹®ÀÚ¸¦ ÇÑ ÁÙÀÇ Á¾·á¹®ÀÚ·Î ÀÎ½ÄÇÏÁö ¾ÊÀ» ¼ö ÀÖ´Ù
+	// IGNPAR : Parity ì—ëŸ¬ê°€ ìˆëŠ” ë¬¸ì ë°”ì´íŠ¸ë¥¼ ë¬´ì‹œí•œë‹¤
+	// ICRNL  : CR ë¬¸ìë¥¼ NL ë¬¸ìë¡œ ë³€í™˜ ì²˜ë¦¬í•œë‹¤. ( ì´ì„¤ì •ì„ ì•ˆí•˜ë©´ ë‹¤ë¥¸ ì»´í“¨í„°ëŠ” 
+	//          CR ë¬¸ìë¥¼ í•œ ì¤„ì˜ ì¢…ë£Œë¬¸ìë¡œ ì¸ì‹í•˜ì§€ ì•Šì„ ìˆ˜ ìˆë‹¤
 	Term_NewIo.c_iflag = IGNPAR ;
 	
 	Term_NewIo.c_oflag = 0;
 
-	// ICANON : Canonical ÀÔ·ÂÀ» °¡´ÉÇÏ°Ô ÇÑ´Ù
+	// ICANON : Canonical ì…ë ¥ì„ ê°€ëŠ¥í•˜ê²Œ í•œë‹¤
 	Term_NewIo.c_lflag = ICANON;
 
 	Term_NewIo.c_cc[ VINTR    ] = 0;
@@ -83,7 +83,7 @@ void Uart_OpenPortCanonical_Mode( int Uart_PortNum, int Uart_BaudData  )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_OpenPortNonCanonical_Mode
 //
-//            WORK    : ½Ã¸®¾ó Æ÷Æ® ÃÊ±âÈ­
+//            WORK    : ì‹œë¦¬ì–¼ í¬íŠ¸ ì´ˆê¸°í™”
 //            
 //            DATE    : 2003. 7. 4
 //----------------------------------------------------------------------------------------------------
@@ -98,16 +98,16 @@ int Uart_OpenPortNonCanonical_Mode( int Uart_PortNum, int Uart_BaudData )
                 exit( -1 );
 	}
 
-	// ÀúÀåÇÑ´Ù ÇöÁ¦ ½Ã¸®¾óÆ÷Æ® Á¤º¸¸¦
+	// ì €ì¥í•œë‹¤ í˜„ì œ ì‹œë¦¬ì–¼í¬íŠ¸ ì •ë³´ë¥¼
 	tcgetattr( Uart_Handle, &Term_OldIo );
 	// Write zeros to a byte string
 	bzero( &Term_NewIo, sizeof( Term_NewIo ) );
 	// CS8   : 8N1 (8bit, No Parity, 1 Stopbit
-	// CREAD : ¼ö½Å °¡´É
+	// CREAD : ìˆ˜ì‹  ê°€ëŠ¥
 	Term_NewIo.c_cflag = Uart_Baud[ Uart_BaudData ] | CS8 | CLOCAL | CREAD;
-	// IGNPAR : Parity ¿¡·¯°¡ ÀÖ´Â ¹®ÀÚ ¹ÙÀÌÆ®¸¦ ¹«½ÃÇÑ´Ù
-	// ICRNL  : CR ¹®ÀÚ¸¦ NL ¹®ÀÚ·Î º¯È¯ Ã³¸®ÇÑ´Ù. ( ÀÌ¼³Á¤À» ¾ÈÇÏ¸é ´Ù¸¥ ÄÄÇ»ÅÍ´Â 
-	//          CR ¹®ÀÚ¸¦ ÇÑ ÁÙÀÇ Á¾·á¹®ÀÚ·Î ÀÎ½ÄÇÏÁö ¾ÊÀ» ¼ö ÀÖ´Ù
+	// IGNPAR : Parity ì—ëŸ¬ê°€ ìˆëŠ” ë¬¸ì ë°”ì´íŠ¸ë¥¼ ë¬´ì‹œí•œë‹¤
+	// ICRNL  : CR ë¬¸ìë¥¼ NL ë¬¸ìë¡œ ë³€í™˜ ì²˜ë¦¬í•œë‹¤. ( ì´ì„¤ì •ì„ ì•ˆí•˜ë©´ ë‹¤ë¥¸ ì»´í“¨í„°ëŠ” 
+	//          CR ë¬¸ìë¥¼ í•œ ì¤„ì˜ ì¢…ë£Œë¬¸ìë¡œ ì¸ì‹í•˜ì§€ ì•Šì„ ìˆ˜ ìˆë‹¤
 	Term_NewIo.c_iflag = IGNPAR ;
 	
 	Term_NewIo.c_oflag = 0;
@@ -132,13 +132,13 @@ int Uart_OpenPortNonCanonical_Mode( int Uart_PortNum, int Uart_BaudData )
 
 
 //----------------------------------------------------------------------------------------------
-//            TITLE   : Uart_ClosePort
+//            TITLE   : Uart_Close
 //
-//            WORK    : ½Ã¸®¾ó Æ÷Æ® ´İ´Â´Ù 
+//            WORK    : ì‹œë¦¬ì–¼ í¬íŠ¸ ë‹«ëŠ”ë‹¤ 
 //            
 //            DATE    : 2003. 7. 4
 //----------------------------------------------------------------------------------------------
-void Uart_ClosePort( void )
+void Uart_Close( void )
 {
 	tcsetattr( Uart_Handle, TCSANOW, &Term_OldIo );	
 }
@@ -151,7 +151,7 @@ void Uart_ClosePort( void )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Getch
 //
-//            WORK    : ¹®ÀÚ 1°³¸¦ ¹Ş´Â´Ù 
+//            WORK    : ë¬¸ì 1ê°œë¥¼ ë°›ëŠ”ë‹¤ 
 //            
 //            DATE    : 2003. 7. 4
 //----------------------------------------------------------------------------------------------------
@@ -163,7 +163,7 @@ int Uart_Getch( void )
 	{
 		case CANON_MODE:
 			
-			/* µ¥ÀÌÅÍ 1¹ÙÀÌÆ® °¡Á®¿Â´Ù */			
+			/* ë°ì´í„° 1ë°”ì´íŠ¸ ê°€ì ¸ì˜¨ë‹¤ */			
 			read( Uart_Handle, Uart_Buf, 1 );
 
 			Uart_GetData = Uart_Buf[0];
@@ -190,7 +190,7 @@ int Uart_Getch( void )
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Putch
 //
-//            WORK    : ¹®ÀÚ 1°³¸¦ º¸³½´Ù 
+//            WORK    : ë¬¸ì 1ê°œë¥¼ ë³´ë‚¸ë‹¤ 
 //            
 //            DATE    : 2003. 3. 7
 //----------------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ void Uart_Putch( char Uart_PutData )
 		case CANON_MODE:
 		case NONE_CANON_MODE:
 			
-			/* µ¥ÀÌÅÍ 1¹ÙÀÌÆ® º¸³½´Ù */			
+			/* ë°ì´í„° 1ë°”ì´íŠ¸ ë³´ë‚¸ë‹¤ */			
 			write( Uart_Handle, &Uart_PutData, 1 );
 			break;
 	}
@@ -216,7 +216,7 @@ void Uart_Putch( char Uart_PutData )
 //
 //          TITLE : Uart_Print
 //
-//          WORK  : ½Ã¸®¾ó·Î ¹®ÀÚ¿­À» º¸³½´Ù.
+//          WORK  : ì‹œë¦¬ì–¼ë¡œ ë¬¸ìì—´ì„ ë³´ë‚¸ë‹¤.
 //
 //----------------------------------------------------------------------------
 void Uart_Print(char *UartPrintData)
@@ -225,7 +225,7 @@ void Uart_Print(char *UartPrintData)
 	{
 		Uart_Putch(*UartPrintData);
                
-		if( *UartPrintData == 0x0A )  // LF ¿¡ CRÀ» º¸ÅÄ´Ù
+		if( *UartPrintData == 0x0A )  // LF ì— CRì„ ë³´íƒ ë‹¤
 			Uart_Putch(0x0D);	
                		
 		UartPrintData++;
@@ -241,7 +241,7 @@ void Uart_Print(char *UartPrintData)
 //----------------------------------------------------------------------------------------------
 //            TITLE   : Uart_Gets
 //
-//            WORK    : ¹®ÀÚ 1°³¸¦ ¹Ş´Â´Ù 
+//            WORK    : ë¬¸ì 1ê°œë¥¼ ë°›ëŠ”ë‹¤ 
 //            
 //            DATE    : 2003. 3. 7
 //----------------------------------------------------------------------------------------------
@@ -250,17 +250,17 @@ char *Uart_Gets( void )
 	
 	switch( Uart_ModeFlag )
 	{
-		// Ç¥ÁØ ¸ğµå
+		// í‘œì¤€ ëª¨ë“œ
 		case CANON_MODE:
 			
-			/* µ¥ÀÌÅÍ¿­À» °¡Á®¿Â´Ù */
+			/* ë°ì´í„°ì—´ì„ ê°€ì ¸ì˜¨ë‹¤ */
 			Buf_ReadSize = read( Uart_Handle, Uart_Buf, 255 );
 			Uart_Buf[ Buf_ReadSize ] = 0;			
 			
 			return Uart_Buf;
 			
 			break;
-		// ºñÇ¥ÁØ ¸ğµå
+		// ë¹„í‘œì¤€ ëª¨ë“œ
 		case NONE_CANON_MODE:
 			
 			Buf_ReadSize = read( Uart_Handle, Uart_Buf, 255);
@@ -270,7 +270,7 @@ char *Uart_Gets( void )
 			Term_NewIo.c_cc[ VMIN  ]   = Buf_ReadSize-1;
 			tcsetattr( Uart_Handle, TCSANOW, &Term_NewIo );
 			
-			/* µ¥ÀÌÅÍ 1¹ÙÀÌÆ® °¡Á®¿Â´Ù */
+			/* ë°ì´í„° 1ë°”ì´íŠ¸ ê°€ì ¸ì˜¨ë‹¤ */
 			Buf_ReadSize = read( Uart_Handle, Uart_Buf, 255 );
 			
 			Uart_Buf[ Buf_ReadSize ] = 0;

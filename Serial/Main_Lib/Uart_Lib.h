@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------------------------
-//            TITLE       : Serial Åë½Å Ã³¸® ÇÔ¼ö ¸ğÀ½
+//            TITLE       : Serial í†µì‹  ì²˜ë¦¬ í•¨ìˆ˜ ëª¨ìŒ
 //            WORK        :
 //            DATE        : 2003. 3. 7
 //            FILE        : Uart_Lib.h
@@ -39,6 +39,7 @@
 #define  COME_EX1 4
 #define  COME_EX2 5
 
+#define  COM_USB0	6
                                                                                                  
 #define  CANON_MODE       0
 #define  NONE_CANON_MODE  1
@@ -47,7 +48,7 @@
 volatile  int  STOP = FALSE;
                                                                                                  
                                                                                                  
-int Uart_Handle;   // ½Ã¸®¾ó Æ÷Æ® ÇÚµé
+int Uart_Handle;   // ì‹œë¦¬ì–¼ í¬íŠ¸ í•¸ë“¤
 
                                                                                                  
 struct termios     Term_OldIo;
@@ -58,21 +59,26 @@ char   Uart_Buf[255], Buf_ReadSize;
 
 
                                                                                                  
-char   *Uart_PortStr[11] = { "/dev/ttyS0",      // ½Ã¸®¾ó Æ÷Æ® ¼³Á¤ ¹è¿­
+char   *Uart_PortStr[11] = { "/dev/ttyS0",      // ì‹œë¦¬ì–¼ í¬íŠ¸ ì„¤ì • ë°°ì—´
                            "/dev/ttyS1",
                            "/dev/ttyS2",
                            "/dev/ttyS3",
                            "/dev/ttyE0",
-                           "/dev/ttyE1" };
+                           "/dev/ttyE1",
+                           "/dev/ttyUSB0" };
                                                                                                  
-int    Uart_Baud[7]  = { B1200, B2400, B9600, B19200, B38400, B57600, B115200 };  // Åë½Å ¼Óµµ ¼³Á¤ ¹è¿­
+int    Uart_Baud[7]  = { B1200, B2400, B9600, B19200, B38400, B57600, B115200 };  // í†µì‹  ì†ë„ ì„¤ì • ë°°ì—´
                                                                                                  
-int    Uart_ModeFlag;   // Ç¥ÁØ ¸ğµåÀÎÁö, ºñÇ¥ÁØÀÎÁö ¼³Á¤                              
+int    Uart_ModeFlag;   // í‘œì¤€ ëª¨ë“œì¸ì§€, ë¹„í‘œì¤€ì¸ì§€ ì„¤ì •                              
 
 
-//----- ÇÔ¼ö ÀçÁ¤ÀÇ 
+//----- í•¨ìˆ˜ ì¬ì •ì˜ 
 //                                                                   
 #define Uart_Open(PortNum,BaudData)    Uart_OpenPortNonCanonical_Mode(PortNum,BaudData)                                                                                                                                                                                         
+
+void Uart_Close( void );
+
+
 #endif
                                                                                                  
                                                                                                  
