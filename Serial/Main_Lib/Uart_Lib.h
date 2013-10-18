@@ -40,6 +40,8 @@
 #define  COME_EX2 5
 
 #define  COM_USB0	6
+#define  COM_USB1	7
+
                                                                                                  
 #define  CANON_MODE       0
 #define  NONE_CANON_MODE  1
@@ -65,7 +67,8 @@ char   *Uart_PortStr[11] = { "/dev/ttyS0",      // 시리얼 포트 설정 배�
                            "/dev/ttyS3",
                            "/dev/ttyE0",
                            "/dev/ttyE1",
-                           "/dev/ttyUSB0" };
+                           "/dev/ttyUSB0",
+                           "/dev/ttyACM0" };
                                                                                                  
 int    Uart_Baud[7]  = { B1200, B2400, B9600, B19200, B38400, B57600, B115200 };  // 통신 속도 설정 배열
                                                                                                  

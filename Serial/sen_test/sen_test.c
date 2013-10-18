@@ -88,11 +88,16 @@ int main( void )
 		if( KeyBrd_Hit() )
 		{
 			Key_Data = KeyBrd_Getch();
-			printf("Key Pressed %c\r\n", Key_Data);
+			//printf("Key Pressed %c\r\n", Key_Data);
 			
 			if( Key_Data == 'q' ) break;
 			
-			Uart_Putch( Key_Data );
+			if( Key_Data == 'i' )	Uart_Print( "move pwm  20  20\n" );
+			if( Key_Data == 'j' )	Uart_Print( "move pwm -40  40\n" );
+			if( Key_Data == 'l' )	Uart_Print( "move pwm  40 -40\n" );
+			if( Key_Data == ',' )	Uart_Print( "move pwm -40 -40\n" );
+			if( Key_Data == 'k' )	Uart_Print( "move pwm   0   0\n" );
+
 		}
 
 	}
@@ -121,7 +126,7 @@ void Main_Init( void )
 	int  Uart_Handle_Ptr;
                                                                                                  
 	KeyBrd_Init();
-	Uart_Handle_Ptr = Uart_Open( COM_USB0, BAUD_115200 );
+	Uart_Handle_Ptr = Uart_Open( COM_USB1, BAUD_115200 );
 	Uart_Sig_Init( Uart_Handle_Ptr );
 	//Uart_Sig_Func_Init( Uart_Handle_Ptr, Sen_Receive_Handle );
 	Uart_Sig_Func_Init( Uart_Handle_Ptr, Uart_Rxd_Func );
