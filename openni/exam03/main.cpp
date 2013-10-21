@@ -18,6 +18,10 @@
 #include "cv.h"
 #include "highgui.h"
 
+#include "./cvblob_lib/cvblob.h"
+
+using namespace cvb;
+
 
 #define DEPTH_IMG_WIDTH		160		//(320)
 #define DEPTH_IMG_HEIGHT	120		//(240)
@@ -44,6 +48,7 @@ Device device;
 
 
 int OpenNI_Init(void);
+int Object_Tracking(IplImage *frame, IplImage *labelImg, IplImage *segmentated, IplConvKernel* morphKernel);
 
 
 
@@ -82,6 +87,12 @@ int main()
 
 	IplImage_depth = cvCreateImage(cvSize(DEPTH_IMG_WIDTH,DEPTH_IMG_HEIGHT), IPL_DEPTH_8U, 1);
 	IplImage_color = cvCreateImage(cvSize(COLOR_IMG_WIDTH,COLOR_IMG_HEIGHT), IPL_DEPTH_8U, 3);
+
+
+
+	IplImage *labelImg=NULL;
+    IplImage *segmentated = NULL;
+	IplConvKernel* morphKernel = cvCreateStructuringElementEx(5, 5, 1, 1, CV_SHAPE_RECT, NULL);
 
 
 	VideoFrameRef *frame_ptr;	
@@ -220,7 +231,8 @@ int main()
 
 		if( CapturedFlag == 0x03 )
 		{	
-			
+			Object_Tracking(IplImage_color, labelImg, segmentated, morphKernel);
+
 			cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth);  
 			cvSaveImage("/mnt/ramdisk/color/color.jpg",IplImage_color);  
 
@@ -357,5 +369,78 @@ int OpenNI_Init(void)
 	}
 	
 
+	return 0;
+}
+
+
+
+
+
+int Object_Tracking(IplImage *frame, IplImage *labelImg, IplImage *segmentated, IplConvKernel* morphKernel)
+{
+	CvTracks tracks;
+	CvBlobs blobs;
+	unsigned int blobNumber = 0;
+	bool quit = false;
+	CvSize imgSize = cvGetSize(frame);
+
+	segmentated = cvCreateImage(imgSize, 8, 1);
+
+	printf("Step 1 %d %d\n", imgSize.width, imgSize.height );
+
+  // Detecting red pixels:
+    // (This is very slow, use direct access better...)
+	for (unsigned int j=0; j<imgSize.height; j++)
+		for (unsigned int i=0; i<imgSize.width; i++)
+		{
+			CvScalar c = cvGet2D(frame, j, i);
+
+			double b = ((double)c.val[0])/255.;
+			double g = ((double)c.val[1])/255.;
+			double r = ((double)c.val[2])/255.;
+			unsigned char f = 255*((r>0.2+g)&&(r>0.2+b));
+			//	unsigned char f = 255*((g>0.2+b)&&(g>0.2+r));
+
+			cvSet2D(segmentated, j, i, CV_RGB(f, f, f));
+		}
+
+	printf("Step 2\n");
+
+	cvMorphologyEx(segmentated, segmentated, NULL, morphKernel, CV_MOP_OPEN, 1);
+
+	printf("Step 3\n");
+
+    //cvShowImage("segmentated", segmentated);
+
+    labelImg = cvCreateImage(cvGetSize(frame), IPL_DEPTH_LABEL, 1);
+
+	printf("Step 4\n");
+
+    unsigned int result = cvLabel(segmentated, labelImg, blobs);
+
+	printf("Step 5\n");
+
+    cvFilterByArea(blobs, 500, 1000000);
+
+	printf("Step 6\n");
+
+    cvRenderBlobs(labelImg, blobs, frame, frame, CV_BLOB_RENDER_BOUNDING_BOX);
+
+	printf("Step 7\n");
+
+    cvUpdateTracks(blobs, tracks, 200., 5);
+
+	printf("Step 8\n");
+
+    cvRenderTracks(tracks, frame, frame, CV_TRACK_RENDER_ID|CV_TRACK_RENDER_BOUNDING_BOX);
+
+	printf("Step 9\n");
+
+
+//    cvShowImage("red_object_tracking", frame);
+
+	cvReleaseBlobs(blobs);
+  
+  
 	return 0;
 }

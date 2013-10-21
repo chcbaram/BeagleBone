@@ -221,6 +221,8 @@ int main()
 		if( CapturedFlag == 0x03 )
 		{	
 			
+			Object_Tracking(IplImage_color, labelImg, segmentated, morphKernel);
+			
 			cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth);  
 			cvSaveImage("/mnt/ramdisk/color/color.jpg",IplImage_color);  
 
@@ -273,6 +275,9 @@ int main()
 	cvReleaseImage(&IplImage_depth);
 	cvReleaseImage(&IplImage_color);
 
+	cvReleaseImage(&labelImg);
+	cvReleaseImage(&segmentated);
+	cvReleaseStructuringElement(&morphKernel);
 	
 	return 0;
 }

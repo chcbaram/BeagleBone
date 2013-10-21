@@ -6,7 +6,7 @@ INC_DIRS = \
 	../../Include \
 	../Common
 
-SRC_FILES = *.cpp
+SRC_FILES = *.cpp ./cvblob_lib/*.cpp
 
 USED_LIBS += OpenNI2
 #USED_LIBS += `pkg-config --libs opencv`

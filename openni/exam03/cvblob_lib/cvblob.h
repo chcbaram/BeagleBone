@@ -39,7 +39,8 @@
 #if (defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__) || (defined(__APPLE__) & defined(__MACH__)))
 #include <opencv\cv.h>
 #else
-#include <opencv\cv.h>
+//#include <opencv\cv.h>
+#include "cv.h"
 #endif
 
 #ifndef __CV_BEGIN__

@@ -25,8 +25,10 @@ using namespace std;
 #include <opencv2\opencv.hpp>
 #include <opencv\highgui.h>
 #else
-#include <opencv\cv.h>
-#include <opencv\highgui.h>
+//#include <opencv\cv.h>
+//#include <opencv\highgui.h>
+#include "cv.h"
+#include "highgui.h"
 #endif
 
 #include "cvblob.h"
