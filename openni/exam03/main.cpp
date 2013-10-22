@@ -18,18 +18,19 @@
 #include "cv.h"
 #include "highgui.h"
 
+
 #include "./cvblob_lib/cvblob.h"
 
 using namespace cvb;
 
 
-#define DEPTH_IMG_WIDTH		160		//(320)
+#define DEPTH_IMG_WIDTH		320		//(320)
 #define DEPTH_IMG_HEIGHT	120		//(240)
-#define DEPTH_IMG_FPS		15
+#define DEPTH_IMG_FPS		30
 
 #define COLOR_IMG_WIDTH		320		//(320)
 #define COLOR_IMG_HEIGHT	240		//(240)
-#define COLOR_IMG_FPS		15
+#define COLOR_IMG_FPS		30
 
 
 #define SAMPLE_READ_WAIT_TIMEOUT 2000 //2000ms
@@ -231,7 +232,7 @@ int main()
 
 		if( CapturedFlag == 0x03 )
 		{	
-			Object_Tracking(IplImage_color, labelImg, segmentated, morphKernel);
+			//Object_Tracking(IplImage_color, labelImg, segmentated, morphKernel);
 
 			cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth);  
 			cvSaveImage("/mnt/ramdisk/color/color.jpg",IplImage_color);  
