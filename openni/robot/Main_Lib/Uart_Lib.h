@@ -14,7 +14,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h>
-                                                                                                 
+#include <stdio.h>                                                                                                 
                    
 #define  BAUD_115200  6                                                                          
 #define  BAUD_57600   5

@@ -7,7 +7,7 @@
 //----------------------------------------------------------------------------------------------
 
 
-
+#include <stdarg.h>
 
 
 
@@ -232,6 +232,31 @@ void Uart_Print(char *UartPrintData)
 	}        
 }
 
+
+
+
+
+
+/*---------------------------------------------------------------------------
+     TITLE	: Uart_Printf
+     WORK
+     ARG
+     RET
+---------------------------------------------------------------------------*/
+void Uart_Printf( char *format, ... )
+{
+	char Str[200];
+	
+	va_list ap;
+	
+	va_start( ap, format );
+
+	vsprintf( Str, format, ap );	
+
+	Uart_Print(Str);
+	
+	va_end(ap);	
+}
 
 
 

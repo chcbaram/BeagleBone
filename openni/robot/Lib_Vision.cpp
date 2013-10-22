@@ -51,6 +51,11 @@ Device device;
 IplImage *IplImage_depth;
 IplImage *IplImage_color;
 
+IplImage *IplImage_depth_resize;
+IplImage *IplImage_color_resize;
+
+
+
 	
 cv::Mat MatImage_depth;
 cv::Mat MatImage_color;
@@ -160,7 +165,6 @@ int Detect_Red( THREAD_OBJ *pArg )
 	//
 	while ( pArg->Thread_Stop == FALSE )
 	{
-		start_point = clock();
 
 		if( OpenNI_Capture( pArg ) != TRUE )
 		{
@@ -245,9 +249,15 @@ int Detect_Red( THREAD_OBJ *pArg )
 		// 구형 예정
 		
 		
-		//cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth);  
+		cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth);  
 		cvSaveImage("/mnt/ramdisk/color/color.jpg",frame); 
 
+		//cvResize(IplImage_depth, IplImage_depth_resize);
+		//cvResize(frame, IplImage_color_resize);
+		//cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth_resize);  
+		//cvSaveImage("/mnt/ramdisk/color/color.jpg",IplImage_color_resize); 
+
+		usleep(100*1000);
 		
 		end_point = clock();
 		process_time = ((double)(end_point - start_point)/(CLOCKS_PER_SEC/1000));
@@ -257,6 +267,7 @@ int Detect_Red( THREAD_OBJ *pArg )
 			printf("Exe time : %04f msec  %03.1f frames\r\n", process_time, 1000./process_time ); 
 		}
 		
+		start_point = clock();
 	}
 	
 
@@ -396,6 +407,8 @@ int OpenNI_Capture( THREAD_OBJ *pArg )
 	        MatImage_depth.convertTo(MatImage_depth, CV_8U, 255.0/2000.0); 
 
 			IplImage_depth->imageData = (char *) MatImage_depth.data;   
+			//cv::resize( IplImage_depth, IplImage_depth_resize, IplImage_depth_resize.size(), 0, 0, cv::INTER_LINEAR );
+			//cvResize(IplImage_depth, IplImage_depth_resize);
 		}
 		else
 		{
@@ -407,6 +420,8 @@ int OpenNI_Capture( THREAD_OBJ *pArg )
 			cv::cvtColor(MatImage_color,MatImage_color,CV_BGR2RGB); //this will put colors right	
 
 			IplImage_color->imageData = (char *) MatImage_color.data;  
+			//cv::resize( IplImage_color, IplImage_color_resize, IplImage_clor_resize.size(), 0, 0, cv::INTER_LINEAR );			
+			//cvResize(IplImage_color, IplImage_color_resize);
 		}
 
 
@@ -499,7 +514,7 @@ int OpenNI_Init(void)
 	VideoMode mode_depth = depth.getVideoMode();
 
     mode_depth.setResolution(DEPTH_IMG_WIDTH, DEPTH_IMG_HEIGHT);
-	mode_depth.setFps(DEPTH_IMG_FPS);
+	//mode_depth.setFps(DEPTH_IMG_FPS);
     depth.setVideoMode(mode_depth);
     depth.setMirroringEnabled(false);
       
@@ -513,7 +528,7 @@ int OpenNI_Init(void)
 	VideoMode mode_color = color.getVideoMode();
 
     mode_color.setResolution(COLOR_IMG_WIDTH, COLOR_IMG_HEIGHT);
-	mode_color.setFps(COLOR_IMG_FPS);
+	//mode_color.setFps(COLOR_IMG_FPS);
     color.setVideoMode(mode_color);
     color.setMirroringEnabled(false);
 
@@ -529,6 +544,8 @@ int OpenNI_Init(void)
 
 	IplImage_depth = cvCreateImage(cvSize(DEPTH_IMG_WIDTH,DEPTH_IMG_HEIGHT), IPL_DEPTH_8U, 1);
 	IplImage_color = cvCreateImage(cvSize(COLOR_IMG_WIDTH,COLOR_IMG_HEIGHT), IPL_DEPTH_8U, 3);
+	IplImage_depth_resize = cvCreateImage(cvSize(DEPTH_IMG_WIDTH/2,DEPTH_IMG_HEIGHT/2), IPL_DEPTH_8U, 1);
+	IplImage_color_resize = cvCreateImage(cvSize(COLOR_IMG_WIDTH/2,COLOR_IMG_HEIGHT/2), IPL_DEPTH_8U, 3);
 
 
 	CapturedFlag = 0;
@@ -555,7 +572,8 @@ int OpenNI_Close(void)
 	//
 	cvReleaseImage(&IplImage_depth);
 	cvReleaseImage(&IplImage_color);	
-
+	cvReleaseImage(&IplImage_depth_resize);
+	cvReleaseImage(&IplImage_color_resize);
 	return 0;
 }
 
