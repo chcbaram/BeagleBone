@@ -74,7 +74,10 @@ void Thread_Create( U16 ID, void *(*Thread_Func)(void *), void *Arg_Etc  )
 //----------------------------------------------------------------------------------------------
 void Thread_Start( U16 ID )
 {
-	pthread_create( &Thread_Obj[ID].Thread_ID, NULL, Thread_Obj[ID].Thread_Func, Thread_Obj[ID].Thread_Arg_Ptr );
+	if( Thread_Obj[ID].Thread_Use == THREAD_USE )
+	{
+		pthread_create( &Thread_Obj[ID].Thread_ID, NULL, Thread_Obj[ID].Thread_Func, Thread_Obj[ID].Thread_Arg );
+	}
 }
 
 
@@ -89,6 +92,9 @@ void Thread_Start( U16 ID )
 //----------------------------------------------------------------------------------------------
 void Thread_Stop( U16 ID )
 {
+	Thread_Obj[ID].Thread_Use = THREAD_NOT_USE; 
+	Thread_Obj[ID].Thread_Stop = TRUE;
+
 	pthread_join( Thread_Obj[ID].Thread_ID, NULL );
 }
 

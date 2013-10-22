@@ -46,6 +46,7 @@ typedef struct  // 스레드 구조체
 	int         Thread_Time;
 	int         Thread_Mode;
 	int			Thread_Stop;
+	int 		Thread_Ret;
 	void 		*Thread_Arg;
 	void		*Thread_Arg_Etc;
 	void        *(*Thread_Func)(void *);
