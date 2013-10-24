@@ -11,6 +11,8 @@ SRC_FILES = *.cpp ./cvblob_lib/*.cpp
 USED_LIBS += OpenNI2
 #USED_LIBS += `pkg-config --libs opencv`
 USED_LIBS += opencv_core opencv_imgproc opencv_highgui opencv_objdetect
+USED_LIBS += pthread rt
+
 
 EXE_NAME = OpenCV
 
