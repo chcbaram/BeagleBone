@@ -257,7 +257,7 @@ int Detect_Red( THREAD_OBJ *pArg )
 		//cvSaveImage("/mnt/ramdisk/depth/depth.jpg",IplImage_depth_resize);  
 		//cvSaveImage("/mnt/ramdisk/color/color.jpg",IplImage_color_resize); 
 
-		usleep(100*1000);
+		//usleep(100*1000);
 		
 		end_point = clock();
 		process_time = ((double)(end_point - start_point)/(CLOCKS_PER_SEC/1000));
