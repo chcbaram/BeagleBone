@@ -1,0 +1,168 @@
+/* Necessary includes for device drivers */
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/kernel.h> /* printk() */
+#include <linux/slab.h> /* kmalloc() */
+#include <linux/fs.h> /* everything... */
+#include <linux/errno.h> /* error codes */
+#include <linux/types.h> /* size_t */
+#include <linux/proc_fs.h>
+#include <linux/fcntl.h> /* O_ACCMODE */
+#include <asm/system.h> /* cli(), *_flags */
+#include <asm/uaccess.h> /* copy_from/to_user */
+#include <linux/ioport.h> /* request_region */
+#include <asm/io.h> /* ioremap */
+#include <linux/ioctl.h> /* .ioctl fops */
+
+#include "gpio.h"
+#define DEVICE_NAME "gpio"
+
+MODULE_LICENSE("DUAL BSD/GPL");
+
+/* Declaration of functions */
+int gpio_init(void);
+void gpio_exit(void);
+
+// These 4 don't do anything for now
+int gpio_open(struct inode *inode, struct file *filp);
+int gpio_release(struct inode *inode, struct file *filp);
+ssize_t gpio_read(struct file *filp, char *buf, size_t count, loff_t *f_pos);
+ssize_t gpio_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos);
+
+// User commands to kernel module
+long gpio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
+
+// Toggles the the GPIO pin
+void gpio_toggle(struct file *filp);
+
+// File operations, has unlocked_ioctl
+struct file_operations gpio_fops = {
+	.read = gpio_read,
+	.write = gpio_write,
+	.unlocked_ioctl = gpio_ioctl,
+	.open = gpio_open,
+	.release = gpio_release
+};
+
+/* Global variables of the driver */
+#define MMAP_OFFSET 0x44c00000
+#define MMAP_SIZE   (0x48ffffff-MMAP_OFFSET)
+#define GPIO_PIN_SW 38  // GPIO1.6, Beaglebone P8.3
+static void *baseAddr;
+static void *gpioSetAddr;
+static void *gpioClearAddr;
+static void *directionAddr;
+
+/* The major / magic number used can look at 
+/linux-3.2.23/Documentation/ioctl/ioctl-number.txt
+to find a non-conflicting number */
+int gpio_major = 60;
+
+/* Declaration of the init and exit functions */
+module_init(gpio_init);
+module_exit(gpio_exit);
+
+
+//Initialize the pointers and register char device
+int gpio_init(void)
+{
+  printk("<1>Init module\n");
+ 
+  int result;
+  // register the char device
+  result = register_chrdev(gpio_major, "gpio", &gpio_fops);
+  if (result < 0) {
+	  printk("<1>gpio: cannot obtain major number %d\n", gpio_major);
+	  return result;
+  }
+  
+  // gpio_export(pin);
+
+  // setup_gpio_mem_map();
+  baseAddr = ioremap(MMAP_OFFSET, MMAP_SIZE);
+
+  // GPIO configuration
+  // if (DEBUG) printf ("Map GPIO\n");
+
+	gpioSetAddr = baseAddr + (0x4804c194 - MMAP_OFFSET);
+ 	gpioClearAddr = baseAddr + (0x4804c190 - MMAP_OFFSET);
+	directionAddr = baseAddr + (0x4804c134 - MMAP_OFFSET);
+  
+	// Set GPIO38 Pin to OUTPUT (drive data)
+	*((volatile unsigned int *)directionAddr) &= 0xffffffbf;
+
+	*((volatile unsigned int *)directionAddr) &= ~(1<<24 | 1<<23 | 1<<22 | 1<<21);
+
+	*((volatile unsigned int *)gpioSetAddr) |= (1<<24 | 1<<23 | 1<<22 | 1<<21); 
+	
+	
+	return 0;
+}
+
+int gpio_open(struct inode *inode, struct file *filp) {
+	return 0;
+}
+
+int gpio_release(struct inode *inode, struct file *filp) {
+	return 0;
+}
+
+ssize_t gpio_read(struct file *filp, char *buf, size_t count, loff_t *f_pos) {
+	return 1;
+}
+
+ssize_t gpio_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos) {
+	return 1;
+}
+
+// The code used before to access through the ioremap
+void gpio_toggle(struct file *filp) {
+
+	int k;
+	for (k = 0; k < 20000000; k++) {
+		*((volatile unsigned int *)gpioSetAddr) = 0x40;
+		*((volatile unsigned int *)gpioClearAddr) = 0x40;
+	}
+}
+
+void gpio_exit(void) {
+	// gpio_unexport(pin);
+
+	// unmap the ioremap
+	iounmap(baseAddr);
+
+	// unregister the char device
+	unregister_chrdev(gpio_major, "gpio");
+
+	printk("<1>Removed module");
+}
+
+/* 
+filp is a pointer to the file, cmd is the command desired
+arg is the variable of arguments you pass. It can be a pointer address
+How these commands are set up are in gpio.h
+*/
+long gpio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+
+	switch (cmd) {
+		// Toggle the GPIO
+	case IOC_TOGGLE:
+		gpio_toggle(filp);
+		break;
+
+		// Read from user (User writes to Kernel)
+	case IOC_SET:
+		gpio_write(filp, (char *) arg, 1, 0);
+		break;
+
+		// Write to user (User reads from Kernel)
+	case IOC_GET:
+		gpio_read(filp, (char *) arg, 1, 0);
+		break;
+
+	default:
+		return -ENOTTY;
+	}
+	return 1;
+}

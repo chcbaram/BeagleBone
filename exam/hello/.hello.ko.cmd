@@ -1,0 +1,1 @@
+cmd_/root/beagleboard/exam/kernel_modules/hello/hello.ko := arm-linux-gnueabihf-ld -EL -r  -T /root/beagleboard/kernel/linux-dev/KERNEL/scripts/module-common.lds --build-id  -o /root/beagleboard/exam/kernel_modules/hello/hello.ko /root/beagleboard/exam/kernel_modules/hello/hello.o /root/beagleboard/exam/kernel_modules/hello/hello.mod.o
